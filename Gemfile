@@ -1,1 +1,2 @@
 gem 'minitest'
+gem 'rake'
