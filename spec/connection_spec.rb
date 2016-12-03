@@ -10,5 +10,15 @@ describe Scrapper do
       home = @scrapper.visit('/')
       home.status_code = 200
     end
+
+    it 'get videos using sql injection code' do
+    end
+
+    it 'can create json file' do
+    end
+
+    it 'can save json file' do
+    end
+
   end
 end
