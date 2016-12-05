@@ -1,3 +1,5 @@
+source 'https://rubygems.org'
+
 gem 'minitest'
 gem 'rake'
-gem 'oga'
+gem 'oga', '~> 2.7'

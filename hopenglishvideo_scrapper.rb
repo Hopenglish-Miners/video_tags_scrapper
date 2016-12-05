@@ -1,6 +1,8 @@
+require 'oga'
+require 'open-uri'
+require 'json'
+
 class HopenglishScrapper
-  def initialize
-  end
 
   def total_videos
   end
