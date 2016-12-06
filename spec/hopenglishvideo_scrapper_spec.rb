@@ -37,7 +37,7 @@ describe HopenglishScrapper do
 
     it 'should have attribute link' do
       element = @scrapper.videos.sample
-      element["link"].wont_be_empty
+      element["link"] != ""
     end
 
     it 'should have attribute view_count' do

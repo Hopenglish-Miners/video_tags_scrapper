@@ -25,9 +25,9 @@ class HopenglishScrapper
   }
 
   def initialize(query)
-    puts "Getting html"
     @query = query
     @document = Oga.parse_html(open("#{HOME}/search/show?query=#{query}&page=&per_page=1"))
+    @videos = []
   end
 
   def total_videos
@@ -35,7 +35,11 @@ class HopenglishScrapper
   end
 
   def videos
-    @videos ||= scrape_videos_tags
+    if @videos.size > 0
+      @videos
+    else
+      scrape_videos_tags
+    end
   end
 
   private
@@ -57,23 +61,19 @@ class HopenglishScrapper
           end
         end
         @videos << element
-        puts @videos.size
       end
-
       go_to_page(i+1)
     end
+    @videos
   end
 
   def scrape_videos_tags
-    puts "Access card info"
     pages_cards_info
   end
 
   def total_pages
-    puts "Reading total pages"
     element = @document.xpath(XPATH_GET_LAST_PAGER_LINK).attribute("href")
     total = element[0].value.gsub("/search/show?query=#{@query}&page=&per_page=","")
-    puts "Total Pages #{total}"
     total.to_i
   end
 
