@@ -4,7 +4,6 @@ require 'json'
 
 class HopenglishScrapper
   HOME = 'https://www.hopenglish.com'
-  SEARCH_ALL = 'search/show?query=i&page=&per_page='
 
   XPATH_GET_CARD = "//div[contains(@class,'summary')]"
   XPATH_GET_LAST_PAGER_LINK = "//div[contains(@class, 'pager')]//a[last()]"
@@ -25,22 +24,28 @@ class HopenglishScrapper
       "upload_date" => [CARD_TIME_XPATH]
   }
 
-  def initialize
+  def initialize(query)
     puts "Getting html"
-    @document = Oga.parse_html(open("#{HOME}/#{SEARCH_ALL}1"))
-    @videos = []
+    @query = query
+    @document = Oga.parse_html(open("#{HOME}/search/show?query=#{query}&page=&per_page=1"))
   end
 
   def total_videos
-    @videos.size
+    videos.size
   end
 
+  def videos
+    @videos ||= scrape_videos_tags
+  end
+
+  private
+
   def go_to_page(page)
-    @document = Oga.parse_html(open("#{HOME}/#{SEARCH_ALL}#{page}"))
+    @document = Oga.parse_html(open("#{HOME}/search/show?query=#{@query}&page=&per_page=#{page}"))
   end
 
   def pages_cards_info
-    elements = @document.xpath(XPATH_GET_CARD)
+    @videos = []
     (1...total_pages).each do |i|
       @document.xpath(XPATH_GET_CARD).map do |card|
         element = {}
@@ -59,21 +64,17 @@ class HopenglishScrapper
     end
   end
 
-  def videos_tags
+  def scrape_videos_tags
     puts "Access card info"
     pages_cards_info
-    puts "Access video details"
-    result.to_json
   end
 
   def total_pages
     puts "Reading total pages"
     element = @document.xpath(XPATH_GET_LAST_PAGER_LINK).attribute("href")
-    total = element[0].value.gsub("/search/show?query=i&page=&per_page=","")
+    total = element[0].value.gsub("/search/show?query=#{@query}&page=&per_page=","")
     puts "Total Pages #{total}"
     total.to_i
   end
-end
 
-obj = HopenglishScrapper.new
-obj.videos_tags
+end
