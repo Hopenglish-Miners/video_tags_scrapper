@@ -32,6 +32,5 @@ describe HopenglishScrapper do
     it 'should have tags' do
       element = @scrapper.videos.sample
       element["tags"].size >= 0
-    end
   end
 end

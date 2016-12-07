@@ -57,7 +57,9 @@ class HopenglishScrapper
 
   def pages_cards_info
     @videos = []
-    (1...total_pages).each do |i|
+    #total = total_pages
+    total = 5
+    (1...total).each do |i|
       @document.xpath(XPATH_GET_CARD).map do |card|
         element = {}
         MAP_VALUES.each do |k, v|
@@ -68,6 +70,7 @@ class HopenglishScrapper
           end
         end
         @videos << element
+        puts "Total General Cards #{@videos.size}. Page #{i} of #{total}"
       end
       go_to_page(i+1)
     end
@@ -75,21 +78,25 @@ class HopenglishScrapper
   end
 
   def scrape_videos_tags
+    puts "INit Scraper"
     pages_cards_info
+    puts "Init to get Details"
     get_video_details
   end
 
   def get_video_details
+    f = FileSaver.new
     @videos.each_with_index do |video, index|
       #For every video go to link and extract detail information
       video_page = go_to(video["link"])
       script = video_page.xpath(VIDEO_DTL_SCRIPT_XPATH).text.strip
       var_map = script_to_map(script)
       @videos[index]["postId"] = var_map["post_id"].to_i
-      @videos[index]["start_t"] = var_map["start_t"].to_f
-      @videos[index]["end_t"] = var_map["end_t"].to_f
+      @videos[index]["start_t"] = var_map["start_t"]
+      @videos[index]["end_t"] = var_map["end_t"]
       @videos[index]["youtubeId"] = var_map["vID"].to_s.gsub('"','')
       @videos[index]["tags"] = video_page.xpath(VIDEO_DTL_TAGS_XPATH).map { |v| v.text.strip}
+      f.add_object @videos[index]
     end
   end
 
@@ -110,4 +117,34 @@ class HopenglishScrapper
     total.to_i
   end
 
+
+
 end
+
+class FileSaver
+
+  def initialize
+    @i = 0
+    open_file
+  end
+  def open_file
+    File.open("video_tags.json","w") do |f|
+      f.write("{\"videos\":[]}")
+    end
+  end
+
+  def add_object obj
+    File.truncate('video_tags.json', File.size('video_tags.json') - 2)
+
+    open('video_tags.json', 'a') do |f|
+      f << "," if @i != 0
+      f << obj.to_json
+      f << "]}"
+    end
+
+    @i = @i+1
+  end
+end
+
+scrapper = HopenglishScrapper.new('I')
+scrapper.videos
