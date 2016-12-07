@@ -24,6 +24,8 @@ class HopenglishScrapper
       "upload_date" => [CARD_TIME_XPATH]
   }
 
+  VIDEO_DTL_SCRIPT_XPATH = "//div[contains(@class,'video_container')]//script"
+
   def initialize(query)
     @query = query
     @document = Oga.parse_html(open("#{HOME}/search/show?query=#{query}&page=&per_page=1"))
@@ -43,6 +45,10 @@ class HopenglishScrapper
   end
 
   private
+
+  def go_to(relative_url)
+    Oga.parse_html(open("#{HOME}#{relative_url}"))
+  end
 
   def go_to_page(page)
     @document = Oga.parse_html(open("#{HOME}/search/show?query=#{@query}&page=&per_page=#{page}"))
@@ -69,6 +75,28 @@ class HopenglishScrapper
 
   def scrape_videos_tags
     pages_cards_info
+    get_video_details
+  end
+
+  def get_video_details
+    @videos.each_with_index do |video, index|
+      #For every video go to link and extract detail information
+      video_page = go_to(video["link"])
+      script = video_page.xpath(VIDEO_DTL_SCRIPT_XPATH).text.strip
+      var_map = script_to_map(script)
+      @videos[index]["postId"] = var_map["post_id"].to_i
+    end
+  end
+
+  # Expect string with script text
+  # Return a map object with var name as key and value
+  def script_to_map(script)
+    result = {}
+    script.split(';').each do |s|
+      pairs = s.strip.gsub("var",'').strip.split('=')
+      result[pairs[0].strip] = pairs[1].strip
+    end
+    result
   end
 
   def total_pages
