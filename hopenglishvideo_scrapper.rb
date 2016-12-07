@@ -26,6 +26,8 @@ class HopenglishScrapper
 
   VIDEO_DTL_SCRIPT_XPATH = "//div[contains(@class,'video_container')]//script"
   VIDEO_DTL_TAGS_XPATH = "//div[contains(@class,'tag')]//a"
+  VIDEO_DTL_SENTENCES_XPATH = "//div[contains(@id,'tabs-1')]//div[contains(@class,'content')]//p//span"
+  VIDEO_DTL_SENTENCES_XPATH2 = "//div[contains(@class,'phrases-content')]//p"
 
   def initialize(query)
     @query = query
@@ -96,8 +98,21 @@ class HopenglishScrapper
       @videos[index]["end_t"] = var_map["end_t"]
       @videos[index]["youtubeId"] = var_map["vID"].to_s.gsub('"','')
       @videos[index]["tags"] = video_page.xpath(VIDEO_DTL_TAGS_XPATH).map { |v| v.text.strip}
+      @videos[index]["sentences"] = video_page.xpath(VIDEO_DTL_SENTENCES_XPATH).map {|v| v.text.strip}
+      if @videos[index]["sentences"].size == 0
+        @videos[index]["sentences"] = video_page.xpath(VIDEO_DTL_SENTENCES_XPATH2).map {|v| v.text.strip[/[^\n]+/]}
+      end
+      @videos[index]["wordList"] = extract_words @videos[index]["sentences"]
       f.add_object @videos[index]
     end
+  end
+
+  def extract_words(sentences)
+    words = []
+    sentences.each do |s|
+      words.push(*s.split(/[^\w'-]+/))
+    end
+    words
   end
 
   # Expect string with script text
