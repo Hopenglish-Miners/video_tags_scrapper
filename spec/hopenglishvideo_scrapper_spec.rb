@@ -50,11 +50,4 @@ describe HopenglishScrapper do
       element["upload_date"].wont_be_empty
     end
   end
-
-  describe 'Test Words' do
-
-  end
-
-
-
 end
