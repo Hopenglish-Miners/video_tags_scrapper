@@ -25,6 +25,7 @@ class HopenglishScrapper
   }
 
   VIDEO_DTL_SCRIPT_XPATH = "//div[contains(@class,'video_container')]//script"
+  VIDEO_DTL_TAGS_XPATH = "//div[contains(@class,'tag')]//a"
 
   def initialize(query)
     @query = query
@@ -85,6 +86,10 @@ class HopenglishScrapper
       script = video_page.xpath(VIDEO_DTL_SCRIPT_XPATH).text.strip
       var_map = script_to_map(script)
       @videos[index]["postId"] = var_map["post_id"].to_i
+      @videos[index]["start_t"] = var_map["start_t"].to_f
+      @videos[index]["end_t"] = var_map["end_t"].to_f
+      @videos[index]["youtubeId"] = var_map["vID"].to_s.gsub('"','')
+      @videos[index]["tags"] = video_page.xpath(VIDEO_DTL_TAGS_XPATH).map { |v| v.text.strip}
     end
   end
 
