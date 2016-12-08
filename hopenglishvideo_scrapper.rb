@@ -59,8 +59,8 @@ class HopenglishScrapper
 
   def pages_cards_info
     @videos = []
-    #total = total_pages
-    total = 5
+    total = total_pages
+    # total = 5
     (1...total).each do |i|
       @document.xpath(XPATH_GET_CARD).map do |card|
         element = {}
@@ -81,10 +81,10 @@ class HopenglishScrapper
 
   def scrape_videos_tags
     #puts "INit Scraper"
-    pages_cards_info
-    File.open("video_simple_cards.json","w") do |f|
-      f.write(@videos.to_json)
-    end
+    # pages_cards_info
+    # File.open("video_simple_cards.json","w") do |f|
+    #   f.write(@videos.to_json)
+    # end
     file = File.read("video_simple_cards.json")
     @videos = JSON.parse(file)
     #puts "Init to get Details"
@@ -117,7 +117,9 @@ class HopenglishScrapper
     words = []
     if sentences
       sentences.each do |s|
-        words.push(*s.split(/[^\w'-]+/))
+        if s
+          words.push(*s.split(/[^\w'-]+/))
+        end
       end
     end
     words
