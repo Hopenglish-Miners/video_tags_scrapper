@@ -31,7 +31,7 @@ class HopenglishScrapper
 
   def initialize(query)
     @query = query
-    @document = Oga.parse_html(open("#{HOME}/search/show?query=#{query}&page=&per_page=1"))
+    @document = Oga.parse_html(open("#{HOME}/search/show?query=#{query}&page=&per_page=1",:read_timeout => 60))
     @videos = []
   end
 
@@ -50,11 +50,11 @@ class HopenglishScrapper
   private
 
   def go_to(relative_url)
-    Oga.parse_html(open("#{HOME}#{relative_url}"))
+    Oga.parse_html(open("#{HOME}#{relative_url}",:read_timeout => 60))
   end
 
   def go_to_page(page)
-    @document = Oga.parse_html(open("#{HOME}/search/show?query=#{@query}&page=&per_page=#{page}"))
+    @document = Oga.parse_html(open("#{HOME}/search/show?query=#{@query}&page=&per_page=#{page}",:read_timeout => 60))
   end
 
   def pages_cards_info
@@ -72,17 +72,22 @@ class HopenglishScrapper
           end
         end
         @videos << element
-        puts "Total General Cards #{@videos.size}. Page #{i} of #{total}"
       end
+      puts "Total General Cards #{@videos.size}. Page #{i} of #{total}"
       go_to_page(i+1)
     end
     @videos
   end
 
   def scrape_videos_tags
-    puts "INit Scraper"
+    #puts "INit Scraper"
     pages_cards_info
-    puts "Init to get Details"
+    File.open("video_simple_cards.json","w") do |f|
+      f.write(@videos.to_json)
+    end
+    file = File.read("video_simple_cards.json")
+    @videos = JSON.parse(file)
+    #puts "Init to get Details"
     get_video_details
   end
 
@@ -104,13 +109,16 @@ class HopenglishScrapper
       end
       @videos[index]["wordList"] = extract_words @videos[index]["sentences"]
       f.add_object @videos[index]
+      puts "Added details for element #{index+1} of #{@videos.size}"
     end
   end
 
   def extract_words(sentences)
     words = []
-    sentences.each do |s|
-      words.push(*s.split(/[^\w'-]+/))
+    if sentences
+      sentences.each do |s|
+        words.push(*s.split(/[^\w'-]+/))
+      end
     end
     words
   end
@@ -161,5 +169,5 @@ class FileSaver
   end
 end
 
-# scrapper = HopenglishScrapper.new('I')
-# scrapper.videos
+scrapper = HopenglishScrapper.new('I')
+scrapper.videos
