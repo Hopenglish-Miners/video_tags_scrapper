@@ -85,7 +85,7 @@ class HopenglishScrapper
     # File.open("video_simple_cards.json","w") do |f|
     #   f.write(@videos.to_json)
     # end
-    file = File.read("video_simple_cards.json")
+    file = File.read("out/video_simple_cards.json")
     @videos = JSON.parse(file)
     #puts "Init to get Details"
     get_video_details
@@ -131,7 +131,7 @@ class HopenglishScrapper
     result = {}
     script.split(';').each do |s|
       pairs = s.strip.gsub("var",'').strip.split('=')
-      result[pairs[0].strip] = pairs[1].strip
+      result[pairs[0].strip] = pairs[1] ? pairs[1] : ""
     end
     result
   end
@@ -153,13 +153,13 @@ class FileSaver
     open_file
   end
   def open_file
-    File.open("video_tags.json","w") do |f|
+    File.open("out/video_tags.json","w") do |f|
       f.write("{\"videos\":[]}")
     end
   end
 
   def add_object obj
-    File.truncate('video_tags.json', File.size('video_tags.json') - 2)
+    File.truncate('out/video_tags.json', File.size('video_tags.json') - 2)
 
     open('video_tags.json', 'a') do |f|
       f << "," if @i != 0
