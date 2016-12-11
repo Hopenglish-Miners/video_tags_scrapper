@@ -80,11 +80,11 @@ class HopenglishScrapper
   end
 
   def scrape_videos_tags
-    #puts "INit Scraper"
-    # pages_cards_info
-    # File.open("video_simple_cards.json","w") do |f|
-    #   f.write(@videos.to_json)
-    # end
+    puts "INit Scraper"
+    pages_cards_info
+    File.open("out/video_simple_cards.json","w") do |f|
+      f.write(@videos.to_json)
+    end
     file = File.read("out/video_simple_cards.json")
     @videos = JSON.parse(file)
     #puts "Init to get Details"
@@ -171,5 +171,5 @@ class FileSaver
   end
 end
 
-scrapper = HopenglishScrapper.new('I')
-scrapper.videos
+# scrapper = HopenglishScrapper.new('I')
+# scrapper.videos
