@@ -36,10 +36,10 @@ class HopenglishScrapper
   end
 
   def total_videos
-    videos.size
+    vides_without_detail.size
   end
 
-  def videos
+  def vides_without_detail
     if @videos.size > 0
       @videos
     else
@@ -47,7 +47,7 @@ class HopenglishScrapper
     end
   end
 
-  def vides_without_detail
+  def videos
     if @videos.size > 0
       @videos
     else
