@@ -43,7 +43,16 @@ class HopenglishScrapper
     if @videos.size > 0
       @videos
     else
-      scrape_videos_tags
+      scrape_videos_simple_cards
+    end
+  end
+
+  def vides_without_detail
+    if @videos.size > 0
+      @videos
+    else
+      scrape_videos_simple_cards
+      scrape_videos_details_cards
     end
   end
 
@@ -79,12 +88,15 @@ class HopenglishScrapper
     @videos
   end
 
-  def scrape_videos_tags
+  def scrape_videos_simple_cards
     puts "INit Scraper"
     pages_cards_info
     File.open("out/video_simple_cards.json","w") do |f|
       f.write(@videos.to_json)
     end
+  end
+
+  def scrape_videos_details_cards
     file = File.read("out/video_simple_cards.json")
     @videos = JSON.parse(file)
     #puts "Init to get Details"
