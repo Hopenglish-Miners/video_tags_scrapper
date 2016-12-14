@@ -165,13 +165,13 @@ class FileSaver
     open_file
   end
   def open_file
-    File.open("out/video_tags.json","w") do |f|
+    File.open("/out/video_tags.json","w") do |f|
       f.write("{\"videos\":[]}")
     end
   end
 
   def add_object obj
-    File.truncate('out/video_tags.json', File.size('video_tags.json') - 2)
+    File.truncate('/out/video_tags.json', File.size('/out/video_tags.json') - 2)
 
     open('video_tags.json', 'a') do |f|
       f << "," if @i != 0
