@@ -32,13 +32,13 @@ class MyVocabularyScrapper
           words.each { |w| cat.wordList.push(w.strip) }
         end
       end
-      puts cat.wordList
+      puts cat.to_json
     end
     @categories
   end
 
   def save(obj)
-    File.open("/out/my_vocabulary.json","w") do |f|
+    File.open("out/my_vocabulary.json","w") do |f|
       f.write(obj.to_json)
     end
   end
@@ -71,27 +71,7 @@ class Category
   end
 end
 
-class FileSaver
 
-  def initialize
-    @i = 0
-    open_file
-  end
-  def open_file
-    File.open("/out/video_tags.json","w") do |f|
-      f.write("{\"videos\":[]}")
-    end
-  end
-
-  def add_object obj
-    File.truncate('/out/video_tags.json', File.size('/out/video_tags.json') - 2)
-
-    open('video_tags.json', 'a') do |f|
-      f << "," if @i != 0
-      f << obj.to_json
-      f << "]}"
-    end
-
-    @i = @i+1
-  end
-end
+scrapper = MyVocabularyScrapper.new
+result = scrapper.categories_and_wordList
+scrapper.save(result)
