@@ -20,6 +20,11 @@ describe 'My Vocabulary Category' do
     scrapper = MyVocabularyScrapper.new
     scrapper.categories.each {|cat| cat.name.wont_be_empty}
   end
+
+  it 'should have a link attribute' do
+    scrapper = MyVocabularyScrapper.new
+    scrapper.categories.each {|cat| cat.link.wont_be_empty}
+  end
 end
 
 describe 'My Vocabulary Sub Category' do
@@ -33,7 +38,7 @@ describe 'My Vocabulary Sub Category' do
 
   it 'should check that all categories have a attribute wordList that is not empty' do
     scrapper = MyVocabularyScrapper.new
-    scrapper.categories_and_wordList.size > 0 
+    scrapper.categories_and_wordList.size > 0
   end
 
 end
