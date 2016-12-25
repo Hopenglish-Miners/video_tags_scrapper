@@ -12,6 +12,7 @@ class MyVocabularyScrapper
   def initialize
     @document = go_to "#{HOME}/#{URL_CAT}"
     @categories = []
+    @file = FileSaver.new
   end
 
   def go_to(url)
@@ -32,16 +33,13 @@ class MyVocabularyScrapper
           words.each { |w| cat.wordList.push(w.strip) }
         end
       end
-      puts cat.to_json
+      puts cat.name
+      @file add_object cat
     end
     @categories
   end
 
-  def save(obj)
-    File.open("out/my_vocabulary.json","w") do |f|
-      f.write(obj.to_json)
-    end
-  end
+
 
   private
 
@@ -67,7 +65,33 @@ class Category
   end
 
   def to_json
-    {:name => :wordList}.to_json
+    {name => wordList}.to_json
+  end
+
+end
+
+class FileSaver
+
+  def initialize
+    @i = 0
+    open_file
+  end
+  def open_file
+    File.open("out/myvocabulary_categories.json","w") do |f|
+      f.write("[]")
+    end
+  end
+
+  def add_object obj
+    File.truncate('out/myvocabulary_categories.json', File.size('out/myvocabulary_categories.json') - 1)
+
+    open('out/myvocabulary_categories.json', 'a') do |f|
+      f << "," if @i != 0
+      f << obj.to_json
+      f << "]"
+    end
+
+    @i = @i+1
   end
 end
 
