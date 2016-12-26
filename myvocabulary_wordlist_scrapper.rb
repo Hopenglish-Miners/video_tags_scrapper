@@ -30,11 +30,11 @@ class MyVocabularyScrapper
       doc.xpath(XPATH_GET_WORD).map do |words|
         words = words.text.split(',')
         if words.size > 0 and !words[0].include?(')')
-          words.each { |w| cat.wordList.push(w.strip) }
+          words.each { |w| cat.wordList.push(w.strip.encode('UTF-8', :invalid => :replace, :undef => :replace)) }
         end
       end
       puts cat.name
-      @file add_object cat
+      @file.add_object cat
     end
     @categories
   end
@@ -64,8 +64,8 @@ class Category
     @wordList = params.fetch(:wordList, [])
   end
 
-  def to_json
-    {name => wordList}.to_json
+  def to_hash
+    {name => wordList}
   end
 
 end
@@ -87,7 +87,7 @@ class FileSaver
 
     open('out/myvocabulary_categories.json', 'a') do |f|
       f << "," if @i != 0
-      f << obj.to_json
+      f << JSON.pretty_generate(obj.to_hash)
       f << "]"
     end
 
@@ -98,4 +98,3 @@ end
 
 scrapper = MyVocabularyScrapper.new
 result = scrapper.categories_and_wordList
-scrapper.save(result)

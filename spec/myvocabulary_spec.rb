@@ -1,6 +1,6 @@
 require 'minitest/autorun'
 require_relative 'spec_helper.rb'
-require_relative '../hopenglishvideo_scrapper.rb'
+require_relative '../myvocabulary_wordlist_scrapper.rb'
 
 describe 'My Vocabulary Category' do
   before do
